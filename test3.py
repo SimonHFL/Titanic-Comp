@@ -18,23 +18,40 @@ def setEmbarked(df):
 
 def setAgeFill(df):
 
-	median_ages = np.zeros((2,3))
+	if len(df.Age[df.Age.isnull() ]) > 0:
 
-	for i in range(0,2):
-		for j in range(0,3):
-			median_ages[i,j] = df[(df['Gender'] == i) & (df['Pclass'] == j+1)]['Age'].dropna().median()
+		median_ages = np.zeros((2,3))
 
-	df['AgeFill'] = df['Age']		
+		for i in range(0,2):
+			for j in range(0,3):
+				median_ages[i,j] = df[(df['Gender'] == i) & (df['Pclass'] == j+1)]['Age'].dropna().median()
 
-	for i in range(0,2):
-		for j in range(0,3):
-			df.loc[ (df.Age.isnull()) & (df.Gender == i) & (df.Pclass == j+1), 'AgeFill'] = median_ages[i,j]
+		df['AgeFill'] = df['Age']		
+
+		for i in range(0,2):
+			for j in range(0,3):
+				df.loc[ (df.Age.isnull()) & (df.Gender == i) & (df.Pclass == j+1), 'AgeFill'] = median_ages[i,j]
 
 	return df
 
 def dropColumns(df):
 	df = df.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'PassengerId', 'Age'], axis = 1)
 	return df
+
+def setFare(df):
+
+	if len(df.Fare[ df.Fare.isnull() ]) > 0:
+	    
+	    median_fare = np.zeros(3)
+
+	    for f in range(0,3):                                              # loop 0 to 2
+	        median_fare[f] = df[ df.Pclass == f+1 ]['Fare'].dropna().median()
+
+	    for f in range(0,3):                                              # loop 0 to 2
+	        df.loc[ (df.Fare.isnull()) & (df.Pclass == f+1 ), 'Fare'] = median_fare[f]
+
+	return df
+
 
 
 
@@ -48,6 +65,8 @@ df = setEmbarked(df)
 df = setAgeFill(df)
 
 df = dropColumns(df)
+
+df = setFare(df)
 
 train_data = df.values
 
@@ -65,22 +84,9 @@ test_df = setAgeFill(test_df)
 
 test_df = setEmbarked(test_df)
 
-
-#test_df['Embarked'] = test_df['Embarked'].map( { 'C':0, 'S':1, 'Q':2} )
-# temporary fix
-#test_df['Embarked'][test_df['Embarked'].isnull()] = 0
-
-# correct fare
-median_fare = np.zeros(3)
-for f in range(0,3):                                              # loop 0 to 2
-    median_fare[f] = test_df[ test_df.Pclass == f+1 ]['Fare'].dropna().median()
-for f in range(0,3):                                              # loop 0 to 2
-    test_df.loc[ (test_df.Fare.isnull()) & (test_df.Pclass == f+1 ), 'Fare'] = median_fare[f]
-
-
+test_df = setFare(test_df)
 
 ids = test_df['PassengerId'].values
-
 
 test_df = dropColumns(test_df)
 
