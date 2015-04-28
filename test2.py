@@ -38,13 +38,13 @@ median_ages = np.zeros((2,3))
 for i in range(0,2):
 	for j in range(0,3):
 		median_ages[i,j] = df[(df['Gender'] == i) & (df['Pclass'] == j+1)]['Age'].dropna().median()
-
+print(median_ages)
 df['AgeFill'] = df['Age']
 
 for i in range(0,2):
 	for j in range(0,3):
 		df.loc[ (df.Age.isnull()) & (df.Gender == i) & (df.Pclass == j+1), 'AgeFill'] = median_ages[i,j]
-
+#print(df.AgeFill)
 
 df['AgeIsNull'] = pd.isnull(df.Age).astype(int)
 
@@ -65,7 +65,7 @@ df = df.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked', 'Age'], axis = 1)
 #test = df[df['Age'].isnull()][['Gender','Pclass','Age','AgeFill', 'AgeIsNull']].head(10)
 
 train_data = df.values
-print(train_data)
+#print(train_data)
 
 
 #print(df.describe())
