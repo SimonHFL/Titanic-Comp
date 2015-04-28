@@ -10,9 +10,12 @@ def setGender(df):
 	return df
 
 def setEmbarked(df):
+
+	# All missing Embarked -> just make them embark from most common place
+	if len(df.Embarked[ df.Embarked.isnull() ]) > 0:
+	    df.Embarked[ df.Embarked.isnull() ] = df.Embarked.dropna().mode().values
+
 	df['Embarked'] = df['Embarked'].map( { 'C':0, 'S':1, 'Q':2} )
-	# temporary fix
-	df['Embarked'][df['Embarked'].isnull()] = 0
 
 	return df
 
